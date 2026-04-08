@@ -16,44 +16,30 @@ public class FileCopier {
 
         String inputFilename = args[0];
  
-        // declare it earlier here
-        Scanner input;
-        try {
-            input = new Scanner(new FileReader(inputFilename));
-        } catch (FileNotFoundException fnf) {
-            System.out.println("Cannot read input file!");
-            return;
-        }
-        
         // ----- OUTPUT FILE ------
         String outputFilename = args[1];
-        /*
-        Use PrintWriter or FileWriter?
-        PrintWriter is higher-level, FileWriter is low-level 
+       
 
-        PrintWriter doesn't have a way of opening a file non-destructively
-        */
-
-        FileWriter output;
-
-        try {
-            // the second parameter determines whether we want to keep want to keep what's in the file (true), or discard (false).
-            output = new FileWriter(outputFilename, true);
-        } catch (FileNotFoundException fnf) {
-            /* When we create PrintWriter, we create a blank file. If the file already exists, we overwrite it. 
-            however, we can't create it if those directories don't exist.
-            */
-            System.out.println("Cannot create output file!");
-            return;
+        try (
+            Scanner input = new Scanner(new FileReader(inputFilename));
+            FileWriter output = new FileWriter(outputFilename, true) // true for append
+        ) {
+            while(input.hasNextLine()) {
+                String line = input.nextLine();
+                System.out.println(line);
+                output.write(line); // write to the output!
+                output.write(System.lineSeparator()); // platform-independent linebreaks!
+            }
+        } catch(FileNotFoundException fnf) {
+            System.out.println("Error, file not found");    
+        } catch (IOException ioe) {
+                ioe.printStackTrace();
         }
 
-        while(input.hasNextLine()) {
-            String line = input.nextLine();
-            System.out.println(line);
-            output.write(line + "\n"); // write to the output!
-        }
 
-        input.close();
-        output.close();
+        // no longer needed    
+
+        // input.close();
+        // output.close();
     }
 }
