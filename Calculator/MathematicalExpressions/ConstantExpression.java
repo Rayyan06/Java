@@ -1,7 +1,8 @@
-import MathematicalExpressions.MathematicalExpression;
+package MathematicalExpressions;
 
 public class ConstantExpression implements MathematicalExpression {
-    private double value;
+    private final double value;
+
     public ConstantExpression(double value) {
         this.value = value;
     }
@@ -15,4 +16,5 @@ public class ConstantExpression implements MathematicalExpression {
     public String toString() {
         return Double.toString(value);
     }
+
 }

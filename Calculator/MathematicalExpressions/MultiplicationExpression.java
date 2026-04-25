@@ -1,14 +1,12 @@
-import MathematicalExpressions.BinaryExpression;
-import MathematicalExpressions.MathematicalExpression;
+package MathematicalExpressions;
 
 public class MultiplicationExpression extends BinaryExpression {
-
     public MultiplicationExpression(MathematicalExpression left, MathematicalExpression right) {
-        super(left, right, "*");
+        super(left, right);
     }
 
     @Override
     public double evaluate() {
-        return evaluateLeft() + evaluateRight();
+        return evaluateLeft() * evaluateRight();
     }
 }

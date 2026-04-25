@@ -1,3 +1,5 @@
+import MathematicalExpressions.MathematicalExpression;
+
 public abstract class BinaryExpression implements MathematicalExpression {
 
     private final String operator;
