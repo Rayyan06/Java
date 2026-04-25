@@ -1,4 +1,4 @@
-4
+2
 fantasy 3
 mystery 2
 reference 2

@@ -1,0 +1,4 @@
+3
+fantasy 0
+mystery -1
+reference 2

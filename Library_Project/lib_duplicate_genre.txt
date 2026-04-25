@@ -1,5 +1,5 @@
 4
 fantasy 3
 mystery 2
+fantasy 5
 reference 2
-scifi 1

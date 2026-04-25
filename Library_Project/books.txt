@@ -1,0 +1,22 @@
+fantasy 1200 The Lord of the Rings
+fantasy 835 A Game of Thrones
+fantasy 1484 The Chronicles of Narnia
+fantasy 3400 The Harry Potter
+fantasy 1834 The Hobbit
+mystery 318 The Whispers
+mystery 388 I ate a blue moon
+mystery 200 The Silent Patient
+reference 1090 The World Atlas
+reference 814 A Legal Record
+scifi 450 Dune
+scifi 300 Foundation
+horror 18 Do Not Enter the Gate
+biography 500 The Diary of a Young Girl
+fantasy 999 Eragon
+malformedline
+mystery
+reference 1090
+scifi notanumber Foundation Rising
+     
+fantasy abcd The Invisible Man
+fantasy 100

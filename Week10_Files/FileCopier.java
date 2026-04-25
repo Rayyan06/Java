@@ -33,7 +33,7 @@ public class FileCopier {
         } catch(FileNotFoundException fnf) {
             System.out.println("Error, file not found");    
         } catch (IOException ioe) {
-                ioe.printStackTrace();
+            ioe.printStackTrace();
         }
 
 
