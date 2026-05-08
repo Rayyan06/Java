@@ -1,5 +1,0 @@
-4
-fantasy 3
-mystery 2
-reference 2
-scifi 1

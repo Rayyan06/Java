@@ -1,17 +1,14 @@
 import java.lang.StringBuilder;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Shelf {
-    private Book[] books;
-    private int capacity;    // the maximum space on the shelf
+    private List<Book> books;
     private String genre;
 
 
-    public Shelf(String genre, int capacity) {
-        if(capacity <= 0) {
-            throw new IllegalArgumentException("Capacity of shelf must be a whole positive number");
-        }
-        books = new Book[capacity];
-
+    public Shelf(String genre) {
+        books = new ArrayList<>();
         this.genre = genre;
     }
     // accessors
@@ -19,19 +16,9 @@ public class Shelf {
         return genre;
     }
 
-    // returns true if a book was successfully added, false if the shelf was full
-    public boolean addBook(Book book) {
-        // Check if shelf is full
-        if(capacity == books.length) {
-            return false;
-        }
-
-        // BOOK SUCCESSFULLY ADDED
-
-        books[capacity] = book;
-        capacity++;
-
-        return true;
+    // very easy with collections!
+    public void addBook(Book book) {
+        books.add(book);
     }
 
     /*
@@ -39,27 +26,28 @@ public class Shelf {
     */
     public int computeAveragePageCount() {
         // no books on shelf, average is 0
-        if(capacity == 0) {
+        if(books.isEmpty()) {
             return 0;
         }
 
         // declare as double to ensure truncation does not occur
         double totalPageCount = 0;
 
-        // Cannot use foreach loop because there are null slots
-        for(int i = 0; i < capacity; i++) {
-            totalPageCount += books[i].getPageCount();
+        // Can use foreach loop now that we have collections!
+        for(Book book : books) {
+            totalPageCount += book.getPageCount();
         }
 
-        return (int) Math.round(totalPageCount / capacity);
+        return (int) Math.round(totalPageCount / books.size());
     }
 
     // returns a string of all the books on the shelf
     public String listBooks() {
         StringBuilder s = new StringBuilder();
-        for(int i = 0; i < capacity; i++) {
-            s.append("\n");
-            s.append(books[i]);
+
+        for(Book book : books) {
+            s.append(System.lineSeparator());
+            s.append(book);
         }
 
         return s.toString();
@@ -67,10 +55,10 @@ public class Shelf {
 
     // returns true if shelf is empty
     public boolean isEmpty() {
-        return (capacity == 0);
+        return books.isEmpty();
     }
 
     public String toString() {
-		return String.format("%s: %d book%s", genre, capacity, (capacity == 1) ? "": "s");
+		return String.format("%s: %d book%s", genre, books.size(), (books.size() == 1) ? "": "s");
 	}
 }

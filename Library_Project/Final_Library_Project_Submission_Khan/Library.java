@@ -4,42 +4,40 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.InputMismatchException;
 
+// Collection stuff
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Collections;
+
 public class Library {
-    private Shelf[] shelves;
-    private int shelfIndex;
+    private List<Shelf> shelves;
 
-    public Library(int shelveCount) {
-        // A library must have at least one shelf
-        if(shelveCount <= 0) {
-            throw new IllegalArgumentException("Shelf count must be positive.");
-        }
-        shelves = new Shelf[shelveCount];
-        shelfIndex = 0;
+    public Library() {
+        shelves = new ArrayList<>(); // don't need type!
     }
+
     // methods should be private by default, for encapsulation
-
-
-    private void addShelf(String genre, int capacity) {
+    // returns true if shelf was successfully added
+    public boolean addShelf(Shelf newShelf) {
        // check to ensure we aren't adding shelves with duplicate genre
-        for(int i = 0; i < shelfIndex; i++) {
+        for(Shelf shelf : shelves) {
             // Must use equals() method
-            if(shelves[i].getGenre().equals(genre)) {
-                System.out.println("Warning: Shelf of genre \"" + genre + "\" was already added. Skipped.");
-                return;
+            if(shelf.getGenre().equals(newShelf.getGenre())) {
+                return false;
             }
         }
 
-        shelves[shelfIndex] = new Shelf(genre, capacity);
-        shelfIndex++;
+        shelves.add(newShelf);
+        return true;
     }
 
     // finds a shelf of a particular genre and returns it
     // if it cannot find the matching shelf, returns null
     public Shelf findShelf(String genre) {
-        for(int i = 0; i < shelfIndex; i++) {
+        for(Shelf shelf : shelves) {
             // check if the strings are equal
-            if(shelves[i].getGenre().equals(genre)) {
-                return shelves[i];
+            if(shelf.getGenre().equals(genre)) {
+                return shelf;
             }
         }
 
@@ -48,35 +46,61 @@ public class Library {
 
     // returns number of shelves in library
     public int getShelfCount() {
-        return shelfIndex;
+        return shelves.size();
     }
 
 
     // lists all shelves in library
     public void listShelves() {
-        if(shelfIndex == 0) System.out.println("No shelves in library. Check library file import");
-        for(int i = 0; i < shelfIndex; i++) {
-            System.out.println(shelves[i]);
+        if(shelves.size() == 0) {
+            System.out.println("No shelves in library. Check library file import");
+            return;
         }
+
+        // We can do something cool and use a foreach here too
+        // shelves.forEach(System.out::println);
+        for(Shelf shelf : shelves) {
+            System.out.println(shelf);
+        }
+    }
+
+    public List<Shelf> getShelves() {
+        // we don't want the list to be modifiable
+        return Collections.unmodifiableList(shelves);
     }
 
     // Lists all books in library
     public void listBooks() {
-        for(int i = 0; i < shelfIndex; i++) {
-            String border = "--".repeat(shelves[i].getGenre().length()); // Just an aesthetic border
+        for(Shelf shelf : shelves) {
+            String border = "--".repeat(shelf.getGenre().length()); // Just an aesthetic border
             System.out.println(border); 
-            System.out.println(shelves[i]);
+            System.out.println(shelf);
             System.out.println(border); // Just an aesthetic border
-            System.out.println(shelves[i].listBooks());
+            System.out.println(shelf.listBooks());
         }
+    }
+
+    // Add a new book to the library
+    // returns true if book was successfully added
+    public boolean addBook(String bookTitle, String bookGenre, int bookPageCount) {
+        // find the shelf of the specified genre
+        Shelf shelf = findShelf(bookGenre);
+        
+        if(shelf == null) {
+            System.out.println("Warning: No shelf with genre \"" + bookGenre + "\" was found for \"" + bookTitle + "\".");
+            return false;
+        }
+
+        shelf.addBook(new Book(bookTitle, bookPageCount));
+        return true;
     }
 
     /*
     Loads books from library file
+    Note: We don't need the library file to indicate 
+    how many shelves it has on its first line anymore using collections
     Format:
-    - First line contains number indicating how many shelves the library has
-    - Each subsequent line contains a one-word genre, followed by a number indicating the size of the shelf
-
+    - Each line contains a one-word genre ( we don't even need the size of the shelf anymore!)
     */
     public static Library loadFromLibraryFile(String libraryFilename) throws FileNotFoundException {
         // use try-with-resources block
@@ -86,48 +110,31 @@ public class Library {
             Scanner libraryFileInput = new Scanner(new FileReader(libraryFilename));
         ) {
 
-            if(!libraryFileInput.hasNextInt()) {
-                throw new IllegalArgumentException("Error: Library file does not indicate how many shelves it has on the first line");
-            }
+            // if(!libraryFileInput.hasNextInt()) {
+            //     throw new IllegalArgumentException("Error: Library file does not indicate how many shelves it has on the first line");
+            // }
 
-            // Read the first line of the library file to obtain the number of shelves
-            int shelveCount = libraryFileInput.nextInt();
+            // // Read the first line of the library file to obtain the number of shelves
+            // int shelveCount = libraryFileInput.nextInt();
 
-            myLibrary = new Library(shelveCount);
+            myLibrary = new Library();
 
-            // Use For-Loop here instead of a while-loop. Iterating up to shelveCount?
+            // While loop
 
-            for(int i = 0; i < shelveCount; i++) {
-                if(!libraryFileInput.hasNextLine()) {
-                    System.out.println("Warning: File ended early, expected " + shelveCount + " shelves but only found " + i);
-                    break;
-                }
-
-                libraryFileInput.nextLine(); // Consume the remainder of the current line
-
+            while(libraryFileInput.hasNextLine()) {
                 String shelfGenre = libraryFileInput.next();
 
-                if(!libraryFileInput.hasNextInt()) {
-                    throw new IllegalArgumentException(String.format("Error: Shelf \"%s\" capacity must be a valid positive integer", shelfGenre));
-                }
-
-                int shelfCapacity = libraryFileInput.nextInt();
-
                 // Create the shelf
-                myLibrary.addShelf(shelfGenre, shelfCapacity);
-            }
-
-            // If there are extra lines
-            if(libraryFileInput.hasNextLine()) {
-                System.out.println("Warning: File has more shelves than specified " + shelveCount);
+                myLibrary.addShelf(new Shelf(shelfGenre));
             }
         }
+        
         return myLibrary;
     }
 
 
     // returns number of books read successfully from book list file
-    private int importBooks(Scanner bookListFileInput)  {
+    public int importBooks(Scanner bookListFileInput)  {
         int numBooksReadSuccessfully = 0;
 
         // Read each line
@@ -151,23 +158,9 @@ public class Library {
             // The title may contain spaces, so we must read the rest of the line
             String bookTitle = bookListFileInput.nextLine().strip(); // remove initial space
 
-            // Create the book object
-            Book newBook = new Book(bookTitle, bookPageCount);
 
-            /*
-            Retrieve a shelf of a particular Genre and add the book
-            */
-
-            Shelf shelf = findShelf(bookGenre);
-
-            if(shelf == null) {
-                System.out.println("Warning: No shelf with genre \"" + bookGenre + "\" was found for \"" + bookTitle + "\". Line skipped");
-                continue;
-            }
-
-            // add the book. if the book cannot be added, print an error
-            if(!shelf.addBook(newBook)) {
-                System.out.println("Warning: Shelf of genre \"" + shelf.getGenre() + "\" is full. Line skipped");
+            if(!addBook(bookTitle, bookGenre, bookPageCount)) {
+                System.out.println("Line skipped");
                 continue;
             }
 
