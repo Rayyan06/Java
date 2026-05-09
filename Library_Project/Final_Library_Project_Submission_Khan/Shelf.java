@@ -1,6 +1,7 @@
 import java.lang.StringBuilder;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Shelf {
     private List<Book> books;
@@ -41,16 +42,21 @@ public class Shelf {
         return (int) Math.round(totalPageCount / books.size());
     }
 
-    // returns a string of all the books on the shelf
-    public String listBooks() {
-        StringBuilder s = new StringBuilder();
+    // // returns a string of all the books on the shelf
+    // public String listBooks() {
+    //     StringBuilder s = new StringBuilder();
 
-        for(Book book : books) {
-            s.append(System.lineSeparator());
-            s.append(book);
-        }
+    //     for(Book book : books) {
+    //         s.append(System.lineSeparator());
+    //         s.append(book);
+    //     }
 
-        return s.toString();
+    //     return s.toString();
+    // }
+
+
+    public List<Book> listBooks() {
+        return Collections.unmodifiableList(books);
     }
 
     // returns true if shelf is empty

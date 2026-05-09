@@ -2,3 +2,5 @@ fantasy
 mystery
 reference
 scifi
+horror
+biography

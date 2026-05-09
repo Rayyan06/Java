@@ -50,35 +50,35 @@ public class Library {
     }
 
 
-    // lists all shelves in library
-    public void listShelves() {
-        if(shelves.size() == 0) {
-            System.out.println("No shelves in library. Check library file import");
-            return;
-        }
+    // // lists all shelves in library
+    // public void listShelves() {
+    //     if(shelves.size() == 0) {
+    //         System.out.println("No shelves in library. Check library file import");
+    //         return;
+    //     }
 
-        // We can do something cool and use a foreach here too
-        // shelves.forEach(System.out::println);
-        for(Shelf shelf : shelves) {
-            System.out.println(shelf);
-        }
-    }
+    //     // We can do something cool and use a foreach here too
+    //     // shelves.forEach(System.out::println);
+    //     for(Shelf shelf : shelves) {
+    //         System.out.println(shelf);
+    //     }
+    // }
 
     public List<Shelf> getShelves() {
         // we don't want the list to be modifiable
         return Collections.unmodifiableList(shelves);
     }
 
-    // Lists all books in library
-    public void listBooks() {
-        for(Shelf shelf : shelves) {
-            String border = "--".repeat(shelf.getGenre().length()); // Just an aesthetic border
-            System.out.println(border); 
-            System.out.println(shelf);
-            System.out.println(border); // Just an aesthetic border
-            System.out.println(shelf.listBooks());
-        }
-    }
+    // // Lists all books in library
+    // public void listBooks() {
+    //     for(Shelf shelf : shelves) {
+    //         String border = "--".repeat(shelf.getGenre().length()); // Just an aesthetic border
+    //         System.out.println(border); 
+    //         System.out.println(shelf);
+    //         System.out.println(border); // Just an aesthetic border
+    //         System.out.println(shelf.listBooks());
+    //     }
+    // }
 
     // Add a new book to the library
     // returns true if book was successfully added
@@ -171,116 +171,116 @@ public class Library {
     }
 
 
-    public static void main(String[] args) {
-        if (args.length != 1) {
-            System.out.println("Error: Must specify exactly one argument (library file name)");
-            return;
-        }
-        // Create a new Library
-        Library library = null;
+    // public static void main(String[] args) {
+    //     if (args.length != 1) {
+    //         System.out.println("Error: Must specify exactly one argument (library file name)");
+    //         return;
+    //     }
+    //     // Create a new Library
+    //     Library library = null;
     
-        // Load from the library file with the first argument being the filename taken from the command line arguments
-        try {
-            library = loadFromLibraryFile(args[0]);
-            System.out.printf("Library with %d shelves successfully created\n", library.getShelfCount());
-        } catch(InputMismatchException ime) {
-            System.out.println(ime.getMessage());
-            return;
+    //     // Load from the library file with the first argument being the filename taken from the command line arguments
+    //     try {
+    //         library = loadFromLibraryFile(args[0]);
+    //         System.out.printf("Library with %d shelves successfully created\n", library.getShelfCount());
+    //     } catch(InputMismatchException ime) {
+    //         System.out.println(ime.getMessage());
+    //         return;
 
-        } catch(IllegalArgumentException iae) {
-            System.out.println(iae.getMessage());
-            return;
-        } catch (FileNotFoundException fnf) {
-            System.out.println("Error, library file not found: " + fnf.getMessage()); // convey additional details to the user
-            return;
-        }
+    //     } catch(IllegalArgumentException iae) {
+    //         System.out.println(iae.getMessage());
+    //         return;
+    //     } catch (FileNotFoundException fnf) {
+    //         System.out.println("Error, library file not found: " + fnf.getMessage()); // convey additional details to the user
+    //         return;
+    //     }
 
-        Scanner scan = new Scanner(System.in);
+    //     Scanner scan = new Scanner(System.in);
 
-        while (true) {
-            System.out.print("Type \"import\", \"average\", \"shelves\", \"books\", \"list\", or \"exit\": ");
-            // IMPORTANT: We must read the newline as well!
-            String userChoice = scan.nextLine();
+    //     while (true) {
+    //         System.out.print("Type \"import\", \"average\", \"shelves\", \"books\", \"list\", or \"exit\": ");
+    //         // IMPORTANT: We must read the newline as well!
+    //         String userChoice = scan.nextLine();
 
-            switch(userChoice.strip().toLowerCase()) {
-                case "import":
-                    // When the user enters the import command, ask them for a filename for a book list file.
-                    System.out.print("Enter a filename for a book list file: ");
-                    String bookListFileName = scan.nextLine().strip();
+    //         switch(userChoice.strip().toLowerCase()) {
+    //             case "import":
+    //                 // When the user enters the import command, ask them for a filename for a book list file.
+    //                 System.out.print("Enter a filename for a book list file: ");
+    //                 String bookListFileName = scan.nextLine().strip();
 
-                    try (
-                        Scanner bookListFileInput = new Scanner(new FileReader(bookListFileName));
-                    ) {
-                        int numBooksReadSuccessfully = library.importBooks(bookListFileInput);
-                        System.out.println("-".repeat(40));
-                        System.out.printf("%d books were successfully read from %s\n", numBooksReadSuccessfully, bookListFileName);
+    //                 try (
+    //                     Scanner bookListFileInput = new Scanner(new FileReader(bookListFileName));
+    //                 ) {
+    //                     int numBooksReadSuccessfully = library.importBooks(bookListFileInput);
+    //                     System.out.println("-".repeat(40));
+    //                     System.out.printf("%d books were successfully read from %s\n", numBooksReadSuccessfully, bookListFileName);
 
-                    } catch (FileNotFoundException fnf) {
-                        System.out.println("Error, file not found: " + fnf.getMessage()); // convey additional details to the user
-                    }
+    //                 } catch (FileNotFoundException fnf) {
+    //                     System.out.println("Error, file not found: " + fnf.getMessage()); // convey additional details to the user
+    //                 }
 
-                    break;
-                case "average":
-                    /*
-                    When the user enters the average command, ask them to choose a shelf, and then output the average page count of all books on that shelf.
-                    */
-                    System.out.print("Choose a shelf by entering its genre: ");
-                    Shelf shelf = library.findShelf(scan.nextLine().strip());
+    //                 break;
+    //             case "average":
+    //                 /*
+    //                 When the user enters the average command, ask them to choose a shelf, and then output the average page count of all books on that shelf.
+    //                 */
+    //                 System.out.print("Choose a shelf by entering its genre: ");
+    //                 Shelf shelf = library.findShelf(scan.nextLine().strip());
 
-                    if(shelf == null) {
-                        System.out.println("Shelf of genre does not exist. Please try again");
-                        break;
-                    }
+    //                 if(shelf == null) {
+    //                     System.out.println("Shelf of genre does not exist. Please try again");
+    //                     break;
+    //                 }
 
-                    if(shelf.isEmpty()) {
-                        System.out.println("No books on this shelf yet.");
-                        break;
-                    }
-                    System.out.printf("The average page count for books on the %s shelf is %d pages\n", shelf.getGenre(), shelf.computeAveragePageCount());
+    //                 if(shelf.isEmpty()) {
+    //                     System.out.println("No books on this shelf yet.");
+    //                     break;
+    //                 }
+    //                 System.out.printf("The average page count for books on the %s shelf is %d pages\n", shelf.getGenre(), shelf.computeAveragePageCount());
 
-                    break;
-                case "shelves":
-                    /*
-                    When the user enters the shelves command, diplay a list of all the shelves in the library
-                    */
-                    System.out.println("Current shelves in library: ");
-                    library.listShelves();
-                    break;
+    //                 break;
+    //             case "shelves":
+    //                 /*
+    //                 When the user enters the shelves command, diplay a list of all the shelves in the library
+    //                 */
+    //                 System.out.println("Current shelves in library: ");
+    //                 library.listShelves();
+    //                 break;
 
-                case "books":
-                    /*
-                    When the user enters the books command, display a list of all the books in the library
-                    */
-                    library.listBooks();
+    //             case "books":
+    //                 /*
+    //                 When the user enters the books command, display a list of all the books in the library
+    //                 */
+    //                 library.listBooks();
 
-                    break;
+    //                 break;
 
-                case "list":
-                    /* When the user enters the list command, ask them to choose a shelf, and then output a list of all of the titles of books on that shelf. */
-                    System.out.print("Choose a shelf by entering its genre: ");
+    //             case "list":
+    //                 /* When the user enters the list command, ask them to choose a shelf, and then output a list of all of the titles of books on that shelf. */
+    //                 System.out.print("Choose a shelf by entering its genre: ");
                     
-                    Shelf chosenShelf = library.findShelf(scan.nextLine().strip());
+    //                 Shelf chosenShelf = library.findShelf(scan.nextLine().strip());
 
-                    if(chosenShelf == null) {
-                        System.out.println("Shelf of genre does not exist. Please try again");
-                        break;
-                    }
-                    if(chosenShelf.isEmpty()) {
-                        System.out.println("No books on this shelf yet.");
-                        break;
-                    }
+    //                 if(chosenShelf == null) {
+    //                     System.out.println("Shelf of genre does not exist. Please try again");
+    //                     break;
+    //                 }
+    //                 if(chosenShelf.isEmpty()) {
+    //                     System.out.println("No books on this shelf yet.");
+    //                     break;
+    //                 }
 
-                    System.out.println(chosenShelf.listBooks());
+    //                 System.out.println(chosenShelf.listBooks());
 
-                    break;
+    //                 break;
 
-                case "exit":
-                case "done":
-                    return; // terminate the program
+    //             case "exit":
+    //             case "done":
+    //                 return; // terminate the program
 
-                default:
-                    System.out.println("That wasn't a valid choice. Try again. ");
-            }
-        }
-    }
+    //             default:
+    //                 System.out.println("That wasn't a valid choice. Try again. ");
+    //         }
+    //   }
+    //}
 }

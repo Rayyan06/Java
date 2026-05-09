@@ -14,6 +14,6 @@ public class Book {
     }
 
     public String toString() {
-        return title;
+        return String.format("%s: %d pages", title.isEmpty() ? "No title" : title, pageCount);
     }
 }
