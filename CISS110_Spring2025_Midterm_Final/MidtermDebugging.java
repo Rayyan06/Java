@@ -1,6 +1,6 @@
 /*
 Midterm
-
+I came up with this system for tracking errors:
 Three types of errors will be categorized and labelled below, as they are debugged.
 1. Compile Errors (e.g. Syntax Errors)
 2. Runtime Errors

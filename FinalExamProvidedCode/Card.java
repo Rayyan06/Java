@@ -4,7 +4,8 @@ public abstract class Card {
 
 	// Compile Error 24: validSuit() should return boolean
 	public static boolean validSuit(String suit) {
-		for(int i=0; i<=SUITS.length; i++) {
+		// Runtime Error 6: i should end iteration at SUITS.length - 1, due to how looping works
+		for(int i=0; i < SUITS.length; i++) {
 			if(SUITS[i].equals(suit)) {
 				return true;
 			}
@@ -20,7 +21,9 @@ public abstract class Card {
 		if(!validSuit(suit)) {
 			throw new IllegalArgumentException("Invalid suiit!");
 		}
-		suit = suit;
+
+		// Logic Error 3:  must use the "this" statement if the parameter has the same variable name as the member variable
+		this.suit = suit;
 	}
 
 	public String getSuit() {

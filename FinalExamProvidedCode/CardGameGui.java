@@ -53,25 +53,40 @@ public class CardGameGui extends JFrame {
 
 		JPanel handPanel = new JPanel();
 		handPanel.setLayout(new BoxLayout(handPanel, BoxLayout.X_AXIS));
+
 		// Runtime Error 2: Missing instantiation of handCards
 		handCards = new JComboBox<Card>(); 
 		handCards.addItem(null); // allow player to deselect card
+
 		playButton = new JButton("Play this card");
 		playButton.addActionListener(new PlayCardButtonListener());
 
 		// Runtime Error 3: Missing playerScoreLabel instantiation
-		playerScoreLabel = new JLabel();
+		// Logic Error 6: playerScoreLabel was never added to the GUI
+		// Note that score starts at zero initially by default, so there is no need to instantiate it
+		playerScoreLabel = new JLabel("Player Score: " + score);
+		playerScoreLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
 		dealerCardLabel = new JLabel("Dealer played: ");
 		dealerCardLabel.setAlignmentX(Component.RIGHT_ALIGNMENT); // Compile Error 7: Component import missing from java awt
 
 		handPanel.add(playerScoreLabel);
 		handPanel.add(handCards);
 
+		// Logic Error 2: playButton was never added to the layout
+		handPanel.add(playButton);
+
 		add(dealerCardLabel, BorderLayout.NORTH);
 		add(handPanel, BorderLayout.CENTER);
+		add(playerScoreLabel, BorderLayout.SOUTH);
+
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-		initializeDeck();
+
+		// Runtime Error 4: deck was never instantiated
+		deck = new ArrayList<>(); // don't need type!
+
+		// Logic Error 5: We only need to initialize the deck once in the program, remove extra initialization here since we already do it in beginGame()
 	}
 
 	// Compile Error 8: Static reference not required for initializeDeck();
@@ -83,7 +98,8 @@ public class CardGameGui extends JFrame {
 		A standard card deck has 52 cards split into four suits.
 		The outer for-loop is rotating between the suits (e.g. Clubs, Spades, Hearts, Diamonds)
 		The inner for-loop, presumably, is for adding the 9 numeric ranks (2-10) out of the 13 ranks in each suit
-		Presumably, this program does not have an Ace Card, so lets leave it out. 		
+		Presumably, this program does not have an Ace Card, so lets leave it out. 
+		This reduces the total to 48 cards.		
 		*/
 
 		// Compile Error 9: suitIndex should be an int, not a String
@@ -101,15 +117,23 @@ public class CardGameGui extends JFrame {
 			deck.add(new QueenCard(suit));
 			deck.add(new KingCard(suit));
 		}
-		
+	
 		Collections.shuffle(deck);
+
 	}
 
 	public void changeScore(int change) {
 		this.score += change;
+		// Logic Error 7: Update playerScore label whenever the score is changed
+		playerScoreLabel.setText("Player Score: " + this.score);
+		playerScoreLabel.repaint();
 	}
 
 	private Card drawCard() {
+		// Fix for Runtime Error 7: Add check, but now we return null, so we'll need to check downstream to ensure null safety
+		if(deck.isEmpty()) {
+			return null;
+		}
 		return deck.remove(deck.size()-1);
 	}
 
@@ -119,6 +143,12 @@ public class CardGameGui extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Card selected = handCards.getItemAt(handCards.getSelectedIndex());
+
+			// Runtime Error 5: Need to check for Null Card (player wants to deselect card and accidentally hits play)
+			if(selected == null) {
+				return;
+			}
+
 			handCards.removeItemAt(handCards.getSelectedIndex());
 			String message;
 
@@ -139,9 +169,19 @@ public class CardGameGui extends JFrame {
 			} else {
 				int penalty = dealerCard.getLossPenalty();
 				message = "Suits don't match. Lose " + penalty + " points";
-				changeScore(penalty);
-				drawPlayerCards(1);
+
+				// Logic Error 12: Wait... a positive penalty means we should reduce the score by penalty, so it should be negative in the method call 
+				changeScore(-penalty);
 			}
+			
+			// Logic Error 10: The dealer is supposed to draw a new card after the turn is finished!
+			dealCard();
+
+			// Logic Error 8: The player should draw a new card after the turn is finished, even if the suit is the same and turn is a winning turn
+			// Move drawPlayerCards out of else statement to here
+			drawPlayerCards(1);
+
+
 			// Compile Error 19: message is not defined
 			// Compile Error 20: JOptionPane is not imported
 			// Compile Error 21: showMessageDialog is not defined, it belongs to the JOptionPane class
@@ -151,24 +191,41 @@ public class CardGameGui extends JFrame {
 			}
 		}
 	}
+	
 
 	public void dealCard() {
 		dealerCard = drawCard();
+		if(dealerCard == null) {
+			return;
+		}
 		dealerCardLabel.setText("Dealer played: " + dealerCard.toString());
 		dealerCardLabel.repaint();
 	}
 
 	public void drawPlayerCards(int count) {
-		for(int i=0; i<5; i++) {
+		// Runtime Error 7: Edge case - If the program calls drawPlayerCards or dealCard() and there are less then *count* cards remaining in the deck, the 
+		// program will crash with an IndexOutOfBounds error
+		// This could happen if there are less than 5 cards remaining, and the program calls a jack
+		// To fix this, we need to ensure that we check, at the source (in drawCard()), if the deck still has room
+
+		// Logic Error 9: int count is never actually used here, even though we should only be dealing out *count* number of cards
+		for(int i = 0; i < count; i++) {
 			// Compile Error 22: card should be the return value of drawCard() here:
-			handCards.addItem(drawCard());
+			Card card = drawCard();
+			if(card != null) {
+				handCards.addItem(card);
+			}
 		}
 		handCards.repaint();
 	}
 
 	public void reDrawHand() {
+		int numCardsInHand = handCards.getItemCount();
 		handCards.removeAllItems();
-		drawPlayerCards(handCards.getItemCount());
+
+		// Logic Error 11: Uhhh, how are we supposed to get the item count of the hand, if we literally just emptied the hand?!  :)
+		// Clearly, we need a temp variable
+		drawPlayerCards(numCardsInHand);
 	}
 
 	// Compile Error 23: stealDealerCard() does not need to return anything.
@@ -191,7 +248,7 @@ public class CardGameGui extends JFrame {
 			JOptionPane.showMessageDialog(CardGameGui.this, "Better luck next time. Dealer score was " + -score, "You lose...", JOptionPane.INFORMATION_MESSAGE);
 		} else {
 			JOptionPane.showMessageDialog(CardGameGui.this, "The game was a draw.", "Nobody won?", JOptionPane.INFORMATION_MESSAGE);
-		}
+		} 
 		setVisible(false);
 		dispose();
 	}
@@ -199,6 +256,8 @@ public class CardGameGui extends JFrame {
 	// Runtime Error 1: main() method improperly defined
 	public static void main(String[] args) {
 		CardGameGui window = new CardGameGui();
+		// Logic Error 1: window was never set Visible, so we can't see it!
+		window.setVisible(true);
 		window.beginGame();
 	}
 }

@@ -1,8 +1,7 @@
 public class QueenCard extends Card {
 
 	public QueenCard(String suit) {
-		// Compile Error 29: Missing super() in KingCard and QueenCard classes
-		super(suit);
+
 	}
 
 	@Override
@@ -15,10 +14,4 @@ public class QueenCard extends Card {
 	public int getLossPenalty() {
 		return 15;
 	}
-
-	// Logic Error 4: Missing toString() method
-	@Override
-	public String toString() {
-		return "Queen of " + getSuit();
-	} 
 }

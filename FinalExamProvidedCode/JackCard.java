@@ -19,7 +19,6 @@ public class JackCard extends Card {
 		return 15;
 	};
 
-	
 
 	@Override
 	public String toString() {
